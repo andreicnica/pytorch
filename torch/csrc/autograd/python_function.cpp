@@ -545,6 +545,11 @@ static void _mark_non_differentiable(THPFunction *self, t2var_type &t2var)
     var->cdata->requires_grad = 0;
   }
   Py_DECREF(self->non_differentiable);
+  // If no outputs require grad, then this function should never be executed
+  // XXX: this assumes self->non_differentaible contains only unique entries
+  if (num_nondiff == self->cdata.num_inputs) {
+    self->cdata.is_executable = false;
+  }
   self->non_differentiable = NULL;
 }
 
